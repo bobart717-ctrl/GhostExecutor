@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Setup MSBuild
@@ -22,13 +22,16 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore GhostExecutor.sln
 
-    - name: Build
+    - name: Restore .NET Dependencies
+      run: dotnet restore GhostExecutor.sln
+
+    - name: Build Solution (x64)
       run: msbuild GhostExecutor.sln /p:Configuration=Release /p:Platform="x64"
 
-    - name: Upload
+    - name: Upload Finished Executor
       uses: actions/upload-artifact@v4
       with:
-        name: Ghost-Final-Build
+        name: Ghost-Executor-Release
         path: |
           **/x64/Release/GhostDLL.dll
           **/bin/x64/Release/net6.0-windows/GhostExecutor.exe
