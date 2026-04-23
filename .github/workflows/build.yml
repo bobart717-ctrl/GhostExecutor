@@ -3,7 +3,7 @@ name: GhostBuild
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Это позволит запустить сборку кнопкой вручную
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,14 +16,19 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+
+    - name: Restore NuGet Packages
+      run: nuget restore GhostExecutor.sln
+
     - name: Build
-      run: |
-        msbuild GhostExecutor.sln /p:Configuration=Release /p:Platform="x64"
+      run: msbuild GhostExecutor.sln /p:Configuration=Release /p:Platform="x64"
 
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: Ghost-Final-Build
         path: |
-          **/Release/*.exe
-          **/Release/*.dll
+          **/x64/Release/GhostDLL.dll
+          **/bin/x64/Release/net6.0-windows/GhostExecutor.exe
